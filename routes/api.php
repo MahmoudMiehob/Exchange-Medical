@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\JobController;
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\API\ContactController;
 use App\Http\Controllers\API\InstructionController;
 
 Route::get('/user', function (Request $request) {
@@ -31,3 +32,6 @@ Route::prefix('jobs')->group(function () {
 
 // instructions
     Route::apiResource('instructions', InstructionController::class);
+
+//contact
+    Route::apiResource('contacts', ContactController::class);
