@@ -11,10 +11,15 @@ class Job extends Model
     use HasFactory;
 
 
-    protected $table = 'jobs_offer' ; 
+    protected $table = 'jobs_offer' ;
     protected $fillable = [
         'name',
         'place',
         'image',
     ];
+
+    public function applications()
+    {
+        return $this->hasMany(JobApplication::class, 'job_offer_id');
+    }
 }
