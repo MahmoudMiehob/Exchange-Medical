@@ -19,9 +19,10 @@ class AuthController extends Controller
                 'last_name' => 'required|string|max:255',
                 'email' => 'required|email|unique:users',
                 'password' => 'required|string|min:6',
-                'address' => 'nullable|string', // Validate address
-                'documentation' => 'nullable|string', // Validate documentation
-                'pathological_condition' => 'nullable|in:paralysis,loss of limb,hearing loss,down,autism', // Validate pathological_condition
+                'address' => 'nullable|string', 
+                'documentation' => 'nullable|string', 
+                'pathological_condition' => 'nullable|in:paralysis,loss of limb,hearing loss,down,autism', 
+                'role'=> 'required|in:doctor,donor,needy',
             ]);
     
             // Create the user
@@ -30,9 +31,10 @@ class AuthController extends Controller
                 'last_name' => $validatedData['last_name'],
                 'email' => $validatedData['email'],
                 'password' => bcrypt($validatedData['password']),
-                'address' => $validatedData['address'] ?? null, // Add address
-                'documentation' => $validatedData['documentation'] ?? null, // Add documentation
-                'pathological_condition' => $validatedData['pathological_condition'] ?? null, // Add pathological_condition
+                'address' => $validatedData['address'] ?? null, 
+                'documentation' => $validatedData['documentation'] ?? null, 
+                'pathological_condition' => $validatedData['pathological_condition'] ?? null, 
+                'role' => $validatedData['role'] ,
             ]);
     
             // Generate a token for the user

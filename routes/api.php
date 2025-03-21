@@ -23,6 +23,21 @@ Route::middleware('auth:api')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::post('/refresh', [AuthController::class, 'refresh']);
     Route::get('/me', [AuthController::class, 'me']);
+
+    Route::group(['middleware' => 'role:admin'], function () {
+    });
+
+    // Doctor only routes
+    Route::group(['middleware' => 'role:doctor'], function () {
+    });
+
+    // Donor only routes
+    Route::group(['middleware' => 'role:donor'], function () {
+    });
+
+    // Needy only routes
+    Route::group(['middleware' => 'role:needy'], function () {
+    });
 });
 
 
