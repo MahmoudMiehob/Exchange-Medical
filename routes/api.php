@@ -19,59 +19,109 @@ Route::get('/user', function (Request $request) {
 
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
-Route::middleware('auth:api')->group(function () {
-    Route::post('/logout', [AuthController::class, 'logout']);
-    Route::post('/refresh', [AuthController::class, 'refresh']);
-    Route::get('/me', [AuthController::class, 'me']);
-
-    Route::group(['middleware' => 'role:admin'], function () {
-    });
-
-    // Doctor only routes
-    Route::group(['middleware' => 'role:doctor'], function () {
-    });
-
-    // Donor only routes
-    Route::group(['middleware' => 'role:donor'], function () {
-    });
-
-    // Needy only routes
-    Route::group(['middleware' => 'role:needy'], function () {
-    });
-});
-
-
-// Job routes
-Route::prefix('jobs')->group(function () {
-    Route::get('/', [JobController::class, 'index']);
-    Route::post('/', [JobController::class, 'store']);
-    Route::get('/{id}', [JobController::class, 'show']);
-    Route::post('/{id}', [JobController::class, 'update']);
-    Route::delete('/{id}', [JobController::class, 'destroy']);
-});
 
 // instructions
-    Route::apiResource('instructions', InstructionController::class);
+Route::prefix('instructions')->group(function () {
+    Route::get('/', [InstructionController::class, 'index']);
+    Route::get('/{id}', [InstructionController::class, 'show']);
+});
 
-//contact
-    Route::apiResource('contacts', ContactController::class);
+// contactus
+Route::post('/contacts', [ContactController::class, 'store']);
 
 //jobsApplication
-    Route::post('/job-applications/apply', [JobApplicationController::class, 'apply']);
-    Route::get('/job-applications', [JobApplicationController::class, 'index']);
-    Route::get('/job-applications/{job_offer_id}', [JobApplicationController::class, 'showApplicationsByJob']);
+Route::post('/job-applications/apply', [JobApplicationController::class, 'apply']);
 
 
-    
-    Route::apiResource('medicines', MedicineController::class);
+// medicines
+Route::prefix('medicines')->group(function () {
+    Route::get('/', [MedicineController::class, 'index']);
+    Route::get('/{id}', [MedicineController::class, 'show']);
+});
 
-    // Device Routes
-    Route::apiResource('devices', DeviceController::class);
-    
-    // Donation Routes (to show all donations)
-    Route::get('donations', [DonationController::class, 'index']);
-    
-    // Order Routes
-    Route::post('orders', [OrderController::class, 'store']);
-    Route::get('orders', [OrderController::class, 'index']); 
-    Route::get('users/{user}/orders', [OrderController::class, 'userOrders']);
+// device
+Route::prefix('devices')->group(function () {
+    Route::get('/', [DeviceController::class, 'index']); // Show all
+    Route::get('/{id}', [DeviceController::class, 'show']); // Show single
+});
+
+Route::middleware(['token.check'])->group(function () {
+    Route::post('/logout', [AuthController::class, 'logout']);
+
+
+    // admin routes
+    Route::group(['middleware' => 'role:admin'], function () {
+        // Job routes
+        Route::prefix('jobs')->group(callback: function () {
+            Route::post('/', [JobController::class, 'store']);
+            Route::post('/{id}', [JobController::class, 'update']);
+            Route::delete('/{id}', [JobController::class, 'destroy']);
+        });
+
+        // instructions
+        Route::prefix('instructions')->group(function () {
+            Route::post('/', [InstructionController::class, 'store']);
+            Route::patch('/{id}', [InstructionController::class, 'update']);
+            Route::delete('/{id}', [InstructionController::class, 'destroy']);
+        });
+
+        // contactus
+            Route::get('contacts', [ContactController::class , 'index']);
+
+
+
+        //jobsApplication   
+        Route::get('/job-applications', [JobApplicationController::class, 'index']);
+        Route::get('/job-applications/{job_offer_id}', [JobApplicationController::class, 'showApplicationsByJob']);
+
+
+        Route::patch('/medicines/{id}', [MedicineController::class, 'update']);
+        Route::patch('/devices/{id}', [DeviceController::class, 'update']);
+
+        // Order
+        Route::get('orders', [OrderController::class, 'index']);
+    });
+
+
+
+
+    // Donor routes
+    Route::group(['middleware' => 'role:donor'], function () {
+        Route::post('/medicines', [MedicineController::class, 'store']);
+
+        Route::post('/devices', [DeviceController::class, 'store']);
+    });
+
+
+
+
+    // Needy routes
+    Route::group(['middleware' => 'role:needy'], function () {
+        // Job routes
+        Route::prefix('jobs')->group(callback: function () {
+            Route::get('/', [JobController::class, 'index']);
+            Route::get('/{id}', [JobController::class, 'show']);
+        });
+
+        // Donation
+        Route::get('donations', [DonationController::class, 'index']);
+
+        // Order Routes
+        Route::post('orders', [OrderController::class, 'store']);
+    });
+
+
+
+
+    // Needy ,admin routes
+    Route::group(['middleware' => 'role:admin,needy'], function () {
+        // Job routes
+        Route::prefix('jobs')->group(callback: function () {
+            Route::get('/', [JobController::class, 'index']);
+            Route::get('/{id}', [JobController::class, 'show']);
+        });
+
+        // Order
+        Route::get('users/{user}/orders', [OrderController::class, 'userOrders']);
+    });
+});

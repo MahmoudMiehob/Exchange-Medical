@@ -45,7 +45,8 @@ class MedicineController extends Controller
         }
 
         $medicine = Medicine::create($data);
-        return response()->json($medicine, 201);
+return response()->json(['medicine' => $medicine], 201);
+
     }
 
     // Update a medicine donation
@@ -79,7 +80,8 @@ class MedicineController extends Controller
         }
 
         $medicine->update($data);
-        return response()->json($medicine);
+        return response()->json(['medicine' => $medicine], 200);
+
     }
     // Delete a medicine donation
     public function destroy($id)
